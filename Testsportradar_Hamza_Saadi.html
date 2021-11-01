@@ -1,0 +1,99 @@
+<script type="text/javascript">
+class Team{
+  constructor(name){
+    this.name  = name;
+    this.score = 0;
+  }
+}
+
+class Match{
+  constructor(oParent,homeName,awayName){
+    this.matchID  = null;
+    this.HomeTeam = new Team(homeName);
+    this.AwayTeam = new Team(awayName);
+    this.goals = 0;
+    this.Time = oParent.cID;
+   
+    }
+}
+
+class Scoreboard{
+  constructor(){
+    this.cID = 0;
+    this.Matches = {};
+  }
+
+
+  addMatch(home,away){
+    var b64 = btoa(home+away); //creating unique id for every match from the team names 
+    if (this.Matches[b64] == null){
+      this.Matches[b64] = new Match(this,home,away) ;
+      this.cID++;
+      console.log("Match added (started) !");
+    }else{
+      console.log("The 2 teams are already playing against each other!");
+    }
+    return b64;
+  }
+
+  removeMatch(matchID){
+    console.log("DELETING:"+this.Matches[matchID]);
+    delete this.Matches[matchID];
+    console.log("Match finished !");
+  }
+  updateScore(matchID,home,away){
+      if (this.Matches[matchID] !== undefined) {
+      this.Matches[matchID].HomeTeam.score = home;
+      this.Matches[matchID].AwayTeam.score = away;
+      this.Matches[matchID].goals = home+away;
+      console.log("Score updated !");
+      }
+  }
+
+  getSummary(){
+    var result = [];
+    var i= 0;
+    var totalScore = 0;
+    for(var id in this.Matches){
+      totalScore = this.Matches[id].HomeTeam.score+this.Matches[id].AwayTeam.score;
+      for(i=0; i<result.length; i++){
+        if(result[i].goals > totalScore) //comparing the total of goals 
+        {
+             break;
+        }
+        if(result[i].goals === totalScore && result[i].Time > this.Matches[id].Time) // comparing with time if we have the same goals  
+        {
+            break;
+        } 
+      } 
+      result.splice(i,0,this.Matches[id]) // adding the result to a result table with will contain the summary tried.
+    }
+    console.log("Summary:");
+    for(i=result.length-1;i>=0;i--){
+      var m = result[i]
+      console.log(m.HomeTeam.name+" "+m.HomeTeam.score + " - " + m.AwayTeam.name+" "+m.AwayTeam.score);
+    }
+  }
+}
+sc = new Scoreboard();
+
+a = sc.addMatch("Mexico","Canada");
+b = sc.addMatch("Spain","Brazil");
+c = sc.addMatch("Germany","France");
+d = sc.addMatch("Argentina","Australia");
+e = sc.addMatch("Turkey","Japan");
+f = sc.addMatch("Marroco","Tunis");
+j = sc.addMatch("Norway","USA");
+
+sc.updateScore(b,5,5);
+sc.updateScore(j,3,4);
+sc.updateScore(c,2,5);
+sc.updateScore(a,1,1);
+sc.updateScore(d,2,0);
+sc.updateScore(e,0,0);
+sc.updateScore(f,1,1);
+
+//sc.removeMatch(a);
+
+sc.getSummary();
+</script>
